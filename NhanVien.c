@@ -3,6 +3,7 @@
 #include <stdlib.h> 
 #include "Server.c"
 
+
 void NapTien();
 void RutTien();
 void TaoTaiKhoan();
@@ -14,6 +15,9 @@ void ManHinhTrangChu();
 NhanVien nhanVien;
 int main() {
     SetConsoleOutputCP(65001); //Dùng để hiển thị tiếng việt
+    printf("Bạn đã mở chương trình %d lần...", readCount("NhanVien_open.txt"));
+    Sleep(2000);
+    system("cls"); //Xoá màn hình
     ManHinhDangNhap();
     return 0;
 }

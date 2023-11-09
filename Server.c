@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 typedef struct
 {
@@ -46,6 +47,34 @@ void replaceLineInFile(char *filename, int lineIndex, char *newString);
 float KiemTraSoDu(char SoTaiKhoan[]);
 void KhoaThe(char SoTaiKhoan[]);
 char *UserToString(const User *user);
+
+void writeCount(char fileName[], int count)
+{
+    FILE *fptr;
+    fptr = fopen(fileName, "w");
+    if (fptr != NULL)
+    {
+        fprintf(fptr, "%d", count);
+        fclose(fptr);
+    }
+}
+
+int readCount(char fileName[])
+{
+    FILE *fptr;
+    fptr = fopen(fileName, "r");
+    if (fptr == NULL) //first open
+    {
+        fclose(fptr);
+        writeCount(fileName, 1);
+        return 1;
+    }
+    int count = 1;
+    fscanf(fptr, "%d", &count);
+    fclose(fptr);
+    writeCount(fileName, count + 1);
+    return count;
+}
 
 void printUserData(User user)
 {

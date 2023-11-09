@@ -9,8 +9,12 @@ void ManHinhKhoaThe();
 void ManHinhDangNhap();
 void ManHinhTrangChu();
 User mUser;
+
 int main() {
     SetConsoleOutputCP(65001); //Dùng để hiển thị tiếng việt
+    printf("Bạn đã mở chương trình %d lần...", readCount("ATM_open.txt"));
+    Sleep(2000);
+    system("cls"); //Xoá màn hình
     ManHinhDangNhap();
     return 0;
 }
