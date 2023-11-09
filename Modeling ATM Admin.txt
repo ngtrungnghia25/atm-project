@@ -1,0 +1,41 @@
+*** CHƯƠNG TRÌNH DÀNH CHO CÁC NHÂN VIÊN NGÂN HÀNG ***
+Màn hình đăng nhập
+{
+	Nhập tài khoản
+	Nhập mật khẩu
+		-> Đúng -> Mở trang chủ
+		-> Sai -> Nhập lại
+}
+Trang chủ
+{
+	1. Nạp tiền vào tài khoản
+	2. Rút tiền tại ngân hàng
+	3. Chuyển khoản
+	4. Tạo tài khoản
+	5. Khoá tài khoản
+}
+
+1. Trang nạp tiền
+{
+	Nhập số tài khoản
+	Nhập số tiền
+	Xác nhận
+}
+2. Trang rút tiền
+{
+	Nhập số tài khoản
+	Nhập số tiền cần rút
+	Kiểm tra số dư tài khoản
+		-> Đủ -> Xác nhận rút -> Trừ tiền tài khoản
+		-> Không đủ -> Thông báo không đủ số dư
+}
+3. Tạo tài khoản
+{
+	Nhập thông tin & kiểm tra xem người này có tạo tài khoản chưa
+	Nhập mã Mật khẩu & PIN
+}
+4. Khoá tài khoản
+{
+	Nhập số tài khoản
+	Xác nhận
+}

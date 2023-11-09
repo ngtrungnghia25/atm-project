@@ -1,0 +1,53 @@
+*** CHƯƠNG TRÌNH DÀNH CHO CÁC MÁY ATM ***
+Màn hình đăng nhập
+{
+	Nhập tài khoản
+	Nhập mật khẩu
+	Đúng -> Mở trang chủ
+	Sai -> Nhập lại
+}
+Trang chủ
+{
+	1. Rút tiền -> Màn hình rút tiền
+	2. Chuyển khoản -> Màn hình chuyển khoản
+	3. Thông tin tài khoản -> Màn hình thông tin
+	4. Kiểm tra số dư -> Màn hình số dư
+	5. Khoá thẻ -> Màn hình khoá thẻ
+	6. Thoát
+}
+1. Màn hình rút tiền
+{
+	Nhập số tiền cần rút -> kiểm tra xem số dư có đủ không
+				-> Không đủ -> In ra màn hình thông báo số dư không đủ & Hỏi có rút hay quay lại trang chủ
+				-> Đủ -> Nhập mã PIN -> Cho phép rút -> Trừ tiền trong tài khoản -> Thông báo rút thành công & hỏi có rút tiếp hay quay lại trang chủ
+}
+2. Màn hình chuyển khoản
+{
+	Nhập số tài khoản
+	Kiểm tra tài khoản có tồn tại không
+		-> Sai ? Nhập lại
+		-> Đúng ? -> Hiện tên tài khoản -> Nhập số tiền -> Kiểm tra số dư có đủ không
+						-> Không đủ -> Thông báo không đủ số dư & cho nhập lại
+						-> Đủ -> Nhập nội dung chuyển tiền -> Nhập mã PIN 
+								-> Sai -> Nhập lại (Khoá sau 3 lần)
+								-> Đúng -> Cộng tiền cho người nhận & trừ tiền bản thân -> Thông báo thành công
+}
+3. Màn hình thông tin
+{
+	In thông tin tài khoản (Họ tên, tuổi, số cccd, nơi ở, số tài khoản, tên ngân hàng)
+	Nhập 0 để quay lại trang chủ
+}
+4. Màn hình số dư
+{
+	Kiểm tra số dư
+	In ra màn hình số dư
+	Nhập 0 để quay lại
+}
+5. Màn hình khoá thẻ
+{
+	Hỏi lại có tiếp tục khoá thẻ không
+		-> Không -> Quay lại trang chủ
+		-> Tiếp tục -> Nhập mã PIN
+				-> Sai -> Nhập lại
+				-> Đúng -> Khoá thẻ và quay lại trang đăng nhập
+}
