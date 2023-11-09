@@ -11,9 +11,9 @@ Trang chủ
 	1. Rút tiền -> Màn hình rút tiền
 	2. Chuyển khoản -> Màn hình chuyển khoản
 	3. Thông tin tài khoản -> Màn hình thông tin
-	4. Kiểm tra số dư -> Màn hình số dư
-	5. Khoá thẻ -> Màn hình khoá thẻ
-	6. Thoát
+	4. Khoá thẻ -> Màn hình khoá thẻ
+	5. Đăng xuất
+	
 }
 1. Màn hình rút tiền
 {

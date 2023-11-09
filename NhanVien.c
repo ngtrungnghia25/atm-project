@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <Windows.h>
+#include <stdlib.h> 
 #include "Server.c"
 
 void NapTien();
@@ -104,9 +105,9 @@ void NapTien()
     strcpy(TenNguoiNhan, getUserByID(SoTaiKhoan).HoVaTen);
     printf("Tên người nhận: %s\n", TenNguoiNhan);
 
-    float SoTien;
+    long SoTien;
     printf("Nhập số tiền cần nạp: ");
-    scanf("%f", &SoTien);
+    scanf("%ld", &SoTien);
 
     int XacNhan;
     printf("Bạn có muốn tiếp tục? (1 - Tiếp tục | 0 - Quay lại trang chủ): ");
@@ -122,7 +123,7 @@ void NapTien()
     else
     {
         system("cls"); //Xoá màn hình
-        NapTien();
+        ManHinhTrangChu();
     }
     
 }
@@ -133,16 +134,34 @@ void RutTien()
     char SoTaiKhoan[20];
     printf("Nhập số tài khoản: ");
     scanf("%s", &SoTaiKhoan);
+    while (getUserByID(SoTaiKhoan).TonTai == 0)
+    {
+        printf(ANSI_COLOR_RED "Số tài khoản không tồn tại!\n" ANSI_COLOR_RESET);
+        printf("Nhập số tài khoản: ");
+        scanf("%s", &SoTaiKhoan);
+    }
+
+    char ChuTaiKhoan[30];
+    strcpy(ChuTaiKhoan, getUserByID(SoTaiKhoan).HoVaTen);
+    printf("Tên chủ tài khoản: %s\n", ChuTaiKhoan);
+
     printf("Số dư hiện tại là %.2f VND\n", KiemTraSoDu(SoTaiKhoan));
-    int SoTien;
+    long SoTien;
     printf("Nhập số tiền cần rút: ");
-    scanf("%d", &SoTien);
-    while (SoTien % 10000 != 0 || SoTien < 50000)
+    scanf("%ld", &SoTien);
+    while ((SoTien % 10000 != 0 || SoTien < 50000) && SoTien != 0)
     {
         printf(ANSI_COLOR_RED "Số tiền phải chia hết cho 10.000 và lớn hơn 50.000\n" ANSI_COLOR_RESET);
         printf("Nhập số tiền cần rút: ");
-        scanf("%d", &SoTien);
+        scanf("%ld", &SoTien);
     }
+    if (SoTien == 0)
+    {
+        system("cls"); //Xoá màn hình
+        ManHinhTrangChu();
+        return;
+    }
+    
     if (SoTien > KiemTraSoDu(SoTaiKhoan))
     {
         system("cls"); //Xoá màn hình
@@ -151,8 +170,8 @@ void RutTien()
     } else
     {
         //Trừ tiền trong tài khoản
-        TruTien(SoTaiKhoan, SoTien);
-        printf("Đã rút thành công %.2f VND\n", SoTien);
+        TruTien(SoTaiKhoan, (long)SoTien);
+        printf(ANSI_COLOR_GREEN "Đã rút thành công %ld VND\n" ANSI_COLOR_RESET, SoTien);
         printf("Số dư hiện tại là %.2f VND\n", KiemTraSoDu(SoTaiKhoan));
         system("pause");
         system("cls"); //Xoá màn hình
@@ -163,7 +182,59 @@ void TaoTaiKhoan()
 {
     User user;
     printf("-------------TẠO TÀI KHOẢN------------\n");
+
+    const char ALLOWED[] = "0123456789";
+    char random[3+1];
+    int i = 0;
+    int c = 0;
+    int nbAllowed = sizeof(ALLOWED)-1;
+    for(i = 0; i < 3; i++) {
+        c = rand() % nbAllowed ;
+        random[i] = ALLOWED[c];
+    }
+    random[3] = '\0';
+    strcpy(user.SoTaiKhoan, random);
+    if (getUserByID(user.SoTaiKhoan).TonTai == 1)
+    {
+        system("cls"); //Xoá màn hình
+        TaoTaiKhoan();
+        return;
+    }
+    
+
+    puts(user.SoTaiKhoan);
     printf("Nhập Họ và tên: ");
+    gets(user.HoVaTen);
+    gets(user.HoVaTen);
+    user.SoDu = 0;
+    printf("Nhập CCCD: ");
+    gets(user.CCCD);
+    user.TrangThai = 1;
+    printf("Nhập địa chỉ: ");
+    gets(user.DiaChi);
+    printf("Nhập ngày sinh: ");
+    gets(user.NgaySinh);
+    printf("Nhập mã PIN: ");
+    gets(user.MaPin);
+    printf("Nhập mật khẩu: ");
+    gets(user.MatKhau);
+
+    int XacNhan;
+        printf("Bạn có muốn tạo tài khoản này không? (1 - Tiếp tục | 0 - Quay lại trang chủ): ");
+        scanf("%d", &XacNhan);
+        if (XacNhan == 1)
+        {
+            createUser(user);
+            printf(ANSI_COLOR_GREEN "Tạo tài khoản thành công!\n" ANSI_COLOR_RESET);
+            system("pause");
+            system("cls"); //Xoá màn hình
+            ManHinhTrangChu();
+        }
+        else
+        {
+            system("cls"); //Xoá màn hình
+            ManHinhTrangChu();
+        }
 }
 void ManHinhKhoaThe()
 {
@@ -171,10 +242,20 @@ void ManHinhKhoaThe()
     char SoTaiKhoan[20];
     printf("Nhập số tài khoản: ");
     scanf("%s", &SoTaiKhoan);
+    while (getUserByID(SoTaiKhoan).TonTai == 0)
+    {
+        printf(ANSI_COLOR_RED "Số tài khoản không tồn tại!\n" ANSI_COLOR_RESET);
+        printf("Nhập số tài khoản: ");
+        scanf("%s", &SoTaiKhoan);
+    }
+
+    char ChuTaiKhoan[30];
+    strcpy(ChuTaiKhoan, getUserByID(SoTaiKhoan).HoVaTen);
+    printf("Tên chủ tài khoản: %s\n", ChuTaiKhoan);
 
     if (getUserByID(SoTaiKhoan).TrangThai == 0)
     {
-        printf("Thẻ này đã bị khoá!");
+        printf(ANSI_COLOR_RED "Thẻ này đã bị khoá!\n" ANSI_COLOR_RESET);
         system("pause");
         system("cls"); //Xoá màn hình
         ManHinhTrangChu();
@@ -187,7 +268,7 @@ void ManHinhKhoaThe()
         if (XacNhan == 1)
         {
             KhoaThe(SoTaiKhoan);
-            printf("Khoá thẻ thành công!");
+            printf(ANSI_COLOR_GREEN "Khoá thẻ thành công!\n" ANSI_COLOR_RESET);
             system("pause");
             system("cls"); //Xoá màn hình
             ManHinhTrangChu();
@@ -207,9 +288,20 @@ void ManHinhMoThe()
     printf("Nhập số tài khoản: ");
     scanf("%s", &SoTaiKhoan);
 
+    while (getUserByID(SoTaiKhoan).TonTai == 0)
+    {
+        printf(ANSI_COLOR_RED "Số tài khoản không tồn tại!\n" ANSI_COLOR_RESET);
+        printf("Nhập số tài khoản: ");
+        scanf("%s", &SoTaiKhoan);
+    }
+
+    char ChuTaiKhoan[30];
+    strcpy(ChuTaiKhoan, getUserByID(SoTaiKhoan).HoVaTen);
+    printf("Tên chủ tài khoản: %s\n", ChuTaiKhoan);
+
     if (getUserByID(SoTaiKhoan).TrangThai == 1)
     {
-        printf("Thẻ này chưa bị khoá!");
+        printf(ANSI_COLOR_RED "Thẻ này chưa bị khoá!\n" ANSI_COLOR_RESET);
         system("pause");
         system("cls"); //Xoá màn hình
         ManHinhTrangChu();
@@ -222,7 +314,7 @@ void ManHinhMoThe()
         if (XacNhan == 1)
         {
             MoThe(SoTaiKhoan);
-            printf("Mở thẻ thành công!");
+            printf(ANSI_COLOR_GREEN "Mở thẻ thành công!\n" ANSI_COLOR_RESET);
             system("pause");
             system("cls"); //Xoá màn hình
             ManHinhTrangChu();
