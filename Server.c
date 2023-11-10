@@ -2,17 +2,24 @@
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
-#define BUFFER_SIZE 1000
-#define FILENAME_SIZE 1024
-#define MAX_LINE 2048
 #define BUFFER 1024
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <Windows.h>
+#include <time.h>
 
+typedef struct
+{
+    char TaiKhoan[20];
+    char NguoiThucHien[30];
+    char time[20];
+    float SoTien;
+    char LyDo[100];
+
+} LichSu;
 typedef struct
 {
     int TonTai;
@@ -26,7 +33,7 @@ typedef struct
 {
     int ViTri;
     int TonTai;
-    char SoTaiKhoan[4];
+    char SoTaiKhoan[20];
     char HoVaTen[30];
     float SoDu;
     char CCCD[13];
@@ -37,17 +44,58 @@ typedef struct
     char MatKhau[20];
 } User;
 
-void createUser(User user);
-void UpdateUser(User user);
+/**Lấy ra User dựa trên SỐ TÀI KHOẢN*/
 User getUserByID(char SoTaiKhoan[]);
-NhanVien getNhanVienByID(char SoTaiKhoan[]);
-int Login(char username[], char password[]);
-void printUserData(User user);
-void replaceLineInFile(char *filename, int lineIndex, char *newString);
-float KiemTraSoDu(char SoTaiKhoan[]);
-void KhoaThe(char SoTaiKhoan[]);
-char *UserToString(const User *user);
 
+/**Lấy ra Nhân Viên dựa trên SỐ TÀI KHOẢN*/
+NhanVien getNhanVienByID(char SoTaiKhoan[]);
+
+/**Tạo tài khoản*/
+void createUser(User user);
+
+/**Đăng nhập người dùng*/
+int login(char username[], char password[]);
+
+/**Đăng nhập nhân viên*/
+int loginNhanVien(char username[], char password[]);
+
+/**Cập nhật dữ liệu User*/
+void updateUser(User user);
+
+/**In thông tin User*/
+void printUserData(User user);
+
+/**Kiểm tra số dư từ SỐ TÀI KHOẢN*/
+float KiemTraSoDu(char SoTaiKhoan[]);
+
+/**Khoá thẻ theo SỐ TÀI KHOẢN*/
+void KhoaThe(char SoTaiKhoan[]);
+
+/**Cộng tiền vào tài khoản và ghi lại lịch sử*/
+void CongTien(char SoTaiKhoan[], float SoTien, LichSu lichSu);
+
+/**Trừ tiền vào tài khoản và ghi lại lịch sử*/
+void TruTien(char SoTaiKhoan[], float SoTien, LichSu lichSu);
+
+/**In lịch sử giao dịch ra màn hình*/
+void InLichSu(LichSu lichSu);
+
+/**Load lịch sử giao dịch và in ra màn hình bằng hàm InLichSu*/
+void InDanhSachLichSu(char SoTaiKhoan[]);
+
+/**Ghi lại lịch sử giao dịch*/
+void GhiLaiLichSu(LichSu lichSu);
+
+/**Chuyển User thành chuỗi*/
+char *userToString(const User *user);
+
+/**Chuyển LichSu thành chuỗi*/
+char *lichSuToString(const LichSu *lichSu);
+
+/**Thay đổi 1 dòng trong File*/
+void replaceLineInFile(char *filename, int lineIndex, char *newString);
+
+/**Ghi lại só lần mở phần mềm*/
 void writeCount(char fileName[], int count)
 {
     FILE *fptr;
@@ -59,6 +107,7 @@ void writeCount(char fileName[], int count)
     }
 }
 
+/**Xem số lần mở phần mềm -> sau đó cộng thêm 1 lần và ghi lại*/
 int readCount(char fileName[])
 {
     FILE *fptr;
@@ -74,6 +123,15 @@ int readCount(char fileName[])
     fclose(fptr);
     writeCount(fileName, count + 1);
     return count;
+}
+
+/**Xác nhận người dùng có muốn tiếp tục không [1 - Tiếp tục | 0 - Quay lại]*/
+int YeuCauXacNhan()
+{
+    int XacNhan;
+    printf("Bạn có muốn tiếp tục?\n(1 - Tiếp tục | 0 - Quay lại): ");
+    scanf("%d", &XacNhan);
+    return XacNhan;
 }
 
 void printUserData(User user)
@@ -95,10 +153,14 @@ void printUserData(User user)
 void createUser(User user)
 {
     FILE *file = fopen("Users.txt", "a");
-    fprintf(file, "%s", UserToString(&user));
+    fprintf(file, "%s", userToString(&user));
     fclose(file);
 }
-int Login(char username[], char password[])
+void updateUser(User user)
+{
+    replaceLineInFile("Users.txt", user.ViTri, userToString(&user));
+}
+int login(char username[], char password[])
 {
     User user = getUserByID(username);
     if (user.TonTai == 0) //Tài khoản không tồn tại
@@ -109,7 +171,7 @@ int Login(char username[], char password[])
         return -1;
     return 0;
 }
-int LoginNhanVien(char username[], char password[])
+int loginNhanVien(char username[], char password[])
 {
     NhanVien nhanVien = getNhanVienByID(username);
     if (nhanVien.TonTai == 0) //Tài khoản không tồn tại
@@ -126,32 +188,148 @@ void KhoaThe(char SoTaiKhoan[])
 {
     User user = getUserByID(SoTaiKhoan);
     user.TrangThai  = 0;
-    UpdateUser(user);
+    updateUser(user);
 }
 void MoThe(char SoTaiKhoan[])
 {
     User user = getUserByID(SoTaiKhoan);
     user.TrangThai  = 1;
-    UpdateUser(user);
+    updateUser(user);
 }
-
-void CongTien(char SoTaiKhoan[], float SoTien)
+void CongTien(char SoTaiKhoan[], float SoTien, LichSu lichSu)
 {
     User user = getUserByID(SoTaiKhoan);
     user.SoDu += SoTien;
-    UpdateUser(user);
+    updateUser(user);
+    GhiLaiLichSu(lichSu);
 }
-
-void TruTien(char SoTaiKhoan[], float SoTien)
+void TruTien(char SoTaiKhoan[], float SoTien, LichSu lichSu)
 {
     User user = getUserByID(SoTaiKhoan);
     user.SoDu -= SoTien;
-    UpdateUser(user);
+    updateUser(user);
+    GhiLaiLichSu(lichSu);
 }
+void InLichSu(LichSu lichSu)
+{
+    printf("Thời gian:                 %s\n", lichSu.time);
+    printf("Số tiền:                   ");
+    if (lichSu.SoTien < 0)
+        printf(ANSI_COLOR_RED "%.2f\n" ANSI_COLOR_RESET, lichSu.SoTien);
+    else printf(ANSI_COLOR_GREEN "%.2f\n" ANSI_COLOR_RESET, lichSu.SoTien);
+    
+    printf("Lý Do:                     %s\n", lichSu.LyDo);
+    printf("Người thực hiện:           %s\n\n", lichSu.NguoiThucHien);
+}
+void InDanhSachLichSu(char SoTaiKhoan[])
+{
+    system("cls"); //Xoá màn hình
+    printf("-------------LỊCH SỬ GIAO DỊCH------------\n\n");
+    printf("Số tài khoản: %s\n", SoTaiKhoan);
+    printf("Chủ tài khoản: %s\n\n", getUserByID(SoTaiKhoan).HoVaTen);
 
+    FILE * fp;
+    char * line = NULL; 
+    size_t len = 0;
+    ssize_t read;
+    fp = fopen("LichSu.txt", "r");
+    while ((read = getline(&line, &len, fp)) != -1) {
+        char *token = strtok(line, "\t");
+        if (strcmp(token, SoTaiKhoan) != 0)
+            continue;
+        LichSu lichSu;
+        int i = 0;
+        while (token != NULL)
+        {        
+            if (i == 1)
+                strcpy(lichSu.time, token);
+            else if (i == 2)
+                lichSu.SoTien = atof(token);
+            else if (i == 3)
+                strcpy(lichSu.LyDo, token);
+            else if (i == 4)
+                strcpy(lichSu.NguoiThucHien, token);
+            token = strtok(NULL, "\t");
+            i++;
+        }
+        lichSu.NguoiThucHien[strlen(lichSu.NguoiThucHien) - 1] = '\0';
+        InLichSu(lichSu);
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
+
+    system("pause"); //Dừng màn hình
+}
+void GhiLaiLichSu(LichSu lichSu)
+{
+    time_t timer;
+    char buffer[26];
+    struct tm* tm_info;
+
+    timer = time(NULL);
+    tm_info = localtime(&timer);
+
+    strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+    strcpy(lichSu.time, buffer);
+
+    // printf("%s", LichSuToString(&lichSu));
+    FILE *file = fopen("LichSu.txt", "a");
+    fprintf(file, "%s", lichSuToString(&lichSu));
+    fclose(file);
+}
+char *userToString(const User *user) 
+{
+    int requiredSize = snprintf(NULL, 0, "%s\t%s\t%f\t%s\t%d\t%s\t%s\t%s\t%s\n",
+                                user->SoTaiKhoan, user->HoVaTen, user->SoDu, user->CCCD, user->TrangThai, user->DiaChi, user->NgaySinh, user->MaPin, user->MatKhau);
+
+    char *result = (char *)malloc(requiredSize + 1);
+    if (result) {
+        snprintf(result, requiredSize + 1, "%s\t%s\t%f\t%s\t%d\t%s\t%s\t%s\t%s\n",
+                                user->SoTaiKhoan, user->HoVaTen, user->SoDu, user->CCCD, user->TrangThai, user->DiaChi, user->NgaySinh, user->MaPin, user->MatKhau);
+    }
+    return result;
+}
+char *lichSuToString(const LichSu *lichSu) 
+{
+    int requiredSize = snprintf(NULL, 0, "%s\t%s\t%f\t%s\t%s\n", lichSu->TaiKhoan, lichSu->time, lichSu->SoTien, lichSu->LyDo, lichSu->NguoiThucHien);
+
+    char *result = (char *)malloc(requiredSize + 1);
+    if (result) {
+        snprintf(result, requiredSize + 1, "%s\t%s\t%f\t%s\t%s\n", lichSu->TaiKhoan, lichSu->time, lichSu->SoTien, lichSu->LyDo, lichSu->NguoiThucHien);
+    }
+    return result;
+}
+void replaceLineInFile(char *filename, int lineIndex, char *newString) {
+    FILE *file, *temp;
+    char buffer[512];
+
+    file = fopen(filename, "r");
+    temp = fopen("temp.txt", "w");
+
+    if (!file || !temp) {
+        printf("Error opening files!\n");
+        return;
+    }
+    int count = 0;
+    while ((fgets(buffer, 512, file)) != NULL) {
+        if (lineIndex == count)
+            strcpy(buffer, newString);
+        count++;
+        fputs(buffer, temp);
+    }
+
+    fclose(temp);
+    fclose(file);
+    fclose(file);
+
+    if(remove(filename) != 0)
+        perror("Error deleting file");
+    rename("temp.txt", filename);
+}
 User getUserByID(char SoTaiKhoan[])
 {
-    //https://stackoverflow.com/questions/3501338/c-read-file-line-by-line 
     User user;
     user.TonTai = 0;
     FILE * fp;
@@ -201,7 +379,6 @@ User getUserByID(char SoTaiKhoan[])
         free(line);
     return user;
 }
-
 NhanVien getNhanVienByID(char TaiKhoan[])
 {
     //https://stackoverflow.com/questions/3501338/c-read-file-line-by-line 
@@ -244,48 +421,4 @@ NhanVien getNhanVienByID(char TaiKhoan[])
         free(line);
     exit(EXIT_SUCCESS);
     return nhanVien;
-}
-char *UserToString(const User *user) 
-{
-    int requiredSize = snprintf(NULL, 0, "%s\t%s\t%f\t%s\t%d\t%s\t%s\t%s\t%s\n",
-                                user->SoTaiKhoan, user->HoVaTen, user->SoDu, user->CCCD, user->TrangThai, user->DiaChi, user->NgaySinh, user->MaPin, user->MatKhau);
-
-    char *result = (char *)malloc(requiredSize + 1);
-    if (result) {
-        snprintf(result, requiredSize + 1, "%s\t%s\t%f\t%s\t%d\t%s\t%s\t%s\t%s\n",
-                                user->SoTaiKhoan, user->HoVaTen, user->SoDu, user->CCCD, user->TrangThai, user->DiaChi, user->NgaySinh, user->MaPin, user->MatKhau);
-    }
-    return result;
-}
-void UpdateUser(User user)
-{
-    replaceLineInFile("Users.txt", user.ViTri, UserToString(&user));
-}
-
-void replaceLineInFile(char *filename, int lineIndex, char *newString) {
-    FILE *file, *temp;
-    char buffer[512];
-
-    file = fopen(filename, "r");
-    temp = fopen("temp.txt", "w");
-
-    if (!file || !temp) {
-        printf("Error opening files!\n");
-        return;
-    }
-    int count = 0;
-    while ((fgets(buffer, 512, file)) != NULL) {
-        if (lineIndex == count)
-            strcpy(buffer, newString);
-        count++;
-        fputs(buffer, temp);
-    }
-
-    fclose(temp);
-    fclose(file);
-    fclose(file);
-
-    if(remove(filename) != 0)
-        perror("Error deleting file");
-    rename("temp.txt", filename);
 }

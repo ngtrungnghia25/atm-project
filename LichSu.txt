@@ -1,0 +1,6 @@
+001	2023-11-10 12:06:00	-50000.000000	Rút tiền	Nguyen Trung Nghia
+002	2023-11-10 12:54:42	50000.000000	Nhận tiền từ Nguyen Trung Nghia	Nguyen Trung Nghia
+001	2023-11-10 12:54:42	-50000.000000	Chuyển tiền đến Nguyen Trung Nghia	Nguyen Trung Nghia
+001	2023-11-10 12:57:04	500000.000000	Nạp tiền vào tài khoản	Nhân viên 1
+001	2023-11-10 13:18:29	-500000.000000	Rút tiền	Nguyen Trung Nghia
+001	2023-11-10 14:00:05	-500000.000000	Rút tiền	Nguyen Trung Nghia
