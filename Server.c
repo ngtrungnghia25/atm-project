@@ -233,33 +233,43 @@ void InDanhSachLichSu(char SoTaiKhoan[])
     size_t len = 0;
     ssize_t read;
     fp = fopen("LichSu.txt", "r");
-    while ((read = getline(&line, &len, fp)) != -1) {
-        char *token = strtok(line, "\t");
-        if (strcmp(token, SoTaiKhoan) != 0)
-            continue;
-        LichSu lichSu;
-        int i = 0;
-        while (token != NULL)
-        {        
-            if (i == 1)
-                strcpy(lichSu.time, token);
-            else if (i == 2)
-                lichSu.SoTien = atof(token);
-            else if (i == 3)
-                strcpy(lichSu.LyDo, token);
-            else if (i == 4)
-                strcpy(lichSu.NguoiThucHien, token);
-            token = strtok(NULL, "\t");
-            i++;
+
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+    
+    fp = fopen("LichSu.txt", "r");
+
+    int count = 0;
+    if (size > 0) 
+        while ((read = getline(&line, &len, fp)) != -1) {
+            char *token = strtok(line, "\t");
+            if (strcmp(token, SoTaiKhoan) != 0)
+                continue;
+            LichSu lichSu;
+            int i = 0;
+            while (token != NULL)
+            {        
+                if (i == 1)
+                    strcpy(lichSu.time, token);
+                else if (i == 2)
+                    lichSu.SoTien = atof(token);
+                else if (i == 3)
+                    strcpy(lichSu.LyDo, token);
+                else if (i == 4)
+                    strcpy(lichSu.NguoiThucHien, token);
+                token = strtok(NULL, "\t");
+                i++;
+            }
+            lichSu.NguoiThucHien[strlen(lichSu.NguoiThucHien) - 1] = '\0';
+            InLichSu(lichSu);
+            count++;
         }
-        lichSu.NguoiThucHien[strlen(lichSu.NguoiThucHien) - 1] = '\0';
-        InLichSu(lichSu);
-    }
 
     fclose(fp);
     if (line)
         free(line);
-
+    if (count == 0)
+        printf(ANSI_COLOR_RED "Chưa có giao dịch nào\n" ANSI_COLOR_RESET);
     system("pause"); //Dừng màn hình
 }
 void GhiLaiLichSu(LichSu lichSu)
