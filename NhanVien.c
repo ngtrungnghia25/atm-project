@@ -257,15 +257,14 @@ void TaoTaiKhoan()
         random[i] = ALLOWED[c];
     }
     random[3] = '\0';
+    strcpy(user.SoTaiKhoan, random);
     if (getUserByID(user.SoTaiKhoan).TonTai == 1)
     {
         system("cls"); //Xoá màn hình
         TaoTaiKhoan();
         return;
     }
-    
-
-    puts(user.SoTaiKhoan);
+    printf("Số tài khoản: %s\n", user.SoTaiKhoan);
     printf("Nhập Họ và tên: ");
     gets(user.HoVaTen);
     gets(user.HoVaTen);
