@@ -1,3 +1,9 @@
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <Windows.h>
+#include <time.h>
 #include "Server.c"
 
 /**Mở màn hình đăng nhập*/
@@ -32,7 +38,7 @@ int main() {
 }
 void ManHinhDangNhap()
 {
-    char TaiKhoan[4];
+    char TaiKhoan[20];
     char MatKhau[20];
     printf("-------------ĐĂNG NHẬP------------\n");
     printf("Nhập vào tài khoản: ");
@@ -62,7 +68,7 @@ void ManHinhDangNhap()
 void ManHinhTrangChu()
 {
     system("cls");
-    printf("Chào %s\n\n", mUser.HoVaTen);
+    printf("Chào %s\nSố tài khoản: %s\n\n", mUser.HoVaTen, mUser.SoTaiKhoan);
 
     printf("1. Rút tiền\n");
     printf("2. Chuyển khoản\n");
@@ -138,7 +144,7 @@ void RutTien()
         system("cls"); //Xoá màn hình
         printf(ANSI_COLOR_RED "Số dư không đủ\n" ANSI_COLOR_RESET);
         RutTien();
-    } else //Số dư đủ
+    } else //Số dư đủ 
     {
         int DemLanNhapMaPin = 0; //Đếm số lần nhập mã PIN
         

@@ -138,7 +138,8 @@ void printUserData(User user)
 {
     printf("Số tài khoản:             %s\n", user.SoTaiKhoan);
     printf("Họ và tên:                %s\n", user.HoVaTen);
-    printf("Số dư:                    %.2f\n", user.SoDu);
+    printf("Số dư:                    ");
+    printf(ANSI_COLOR_GREEN "%.2f\n"ANSI_COLOR_RESET, user.SoDu);
     printf("Số CCCD:                  %s\n", user.CCCD);
 
     printf("Trạng thái:               ");
@@ -348,41 +349,47 @@ User getUserByID(char SoTaiKhoan[])
     ssize_t read; //lenght of line
 
     fp = fopen("Users.txt", "r");
+
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+    
+    fp = fopen("Users.txt", "r");
     int row_index = 0;
-    while ((read = getline(&line, &len, fp)) != -1) {
-        char *token = strtok(line, "\t");
-        row_index++;
-        if (strcmp(token, SoTaiKhoan) != 0)
-            continue;
-        user.TonTai = 1;
-        user.ViTri = row_index - 1;
-        strcpy(user.SoTaiKhoan, token);
-        int i = 0;
-        while (token != NULL)
-        {        
-            if (i == 1)
-                strcpy(user.HoVaTen, token);
-            else if (i == 2)
-                user.SoDu = atof(token);
-            else if (i == 3)
-                strcpy(user.CCCD, token);
-            else if (i == 4)
-                user.TrangThai = atoi(token);
-            else if (i == 5)
-                strcpy(user.DiaChi, token);
-            else if (i == 6)
-                strcpy(user.NgaySinh, token);
-            else if (i == 7)
-                strcpy(user.MaPin, token);
-            else if (i == 8)
-                strcpy(user.MatKhau, token);
-            token = strtok(NULL, "\t");
-            i++;
+    if (size > 0) 
+        while ((read = getline(&line, &len, fp)) != -1) {
+            char *token = strtok(line, "\t");
+            row_index++;
+            if (strcmp(token, SoTaiKhoan) != 0)
+                continue;
+            user.TonTai = 1;
+            user.ViTri = row_index - 1;
+            strcpy(user.SoTaiKhoan, token);
+            int i = 0;
+            while (token != NULL)
+            {        
+                if (i == 1)
+                    strcpy(user.HoVaTen, token);
+                else if (i == 2)
+                    user.SoDu = atof(token);
+                else if (i == 3)
+                    strcpy(user.CCCD, token);
+                else if (i == 4)
+                    user.TrangThai = atoi(token);
+                else if (i == 5)
+                    strcpy(user.DiaChi, token);
+                else if (i == 6)
+                    strcpy(user.NgaySinh, token);
+                else if (i == 7)
+                    strcpy(user.MaPin, token);
+                else if (i == 8)
+                    strcpy(user.MatKhau, token);
+                token = strtok(NULL, "\t");
+                i++;
+            }
+            user.MatKhau[strlen(user.MatKhau) - 1] = '\0';
+            fclose(fp);
+            return user;
         }
-        user.MatKhau[strlen(user.MatKhau) - 1] = '\0';
-        fclose(fp);
-        return user;
-    }
 
     fclose(fp);
     if (line)
@@ -402,29 +409,35 @@ NhanVien getNhanVienByID(char TaiKhoan[])
     fp = fopen("AdminAccount.txt", "r");
     if (fp == NULL)
         exit(EXIT_FAILURE);
+
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+    
+    fp = fopen("AdminAccount.txt", "r");
     int row_index = 0;
-    while ((read = getline(&line, &len, fp)) != -1) {
-        char *token = strtok(line, "\t");
-        row_index++;
-        if (strcmp(token, TaiKhoan) != 0)
-            continue;
-        strcpy(nhanVien.TaiKhoan, token);
-        nhanVien.TonTai = 1;
-        int i = 0;
-        while (token != NULL)
-        {        
-            if (i == 1)
-                strcpy(nhanVien.MatKhau, token);
-            else if (i == 2)
-                strcpy(nhanVien.HoVaTen, token);
-            else if (i == 3)
-                strcpy(nhanVien.CCCD, token);
-            token = strtok(NULL, "\t");
-            i++;
+    if (size > 0) 
+        while ((read = getline(&line, &len, fp)) != -1) {
+            char *token = strtok(line, "\t");
+            row_index++;
+            if (strcmp(token, TaiKhoan) != 0)
+                continue;
+            strcpy(nhanVien.TaiKhoan, token);
+            nhanVien.TonTai = 1;
+            int i = 0;
+            while (token != NULL)
+            {        
+                if (i == 1)
+                    strcpy(nhanVien.MatKhau, token);
+                else if (i == 2)
+                    strcpy(nhanVien.HoVaTen, token);
+                else if (i == 3)
+                    strcpy(nhanVien.CCCD, token);
+                token = strtok(NULL, "\t");
+                i++;
+            }
+            nhanVien.CCCD[strlen(nhanVien.CCCD) - 1] = '\0';
+            return nhanVien;
         }
-        nhanVien.CCCD[strlen(nhanVien.CCCD) - 1] = '\0';
-        return nhanVien;
-    }
 
     fclose(fp);
     if (line)

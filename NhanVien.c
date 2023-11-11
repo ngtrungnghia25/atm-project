@@ -38,7 +38,7 @@ int main() {
 }
 void ManHinhDangNhap()
 {
-    char TaiKhoan[4];
+    char TaiKhoan[20];
     char MatKhau[20];
     printf("-------------ĐĂNG NHẬP------------\n");
     printf("Nhập vào tài khoản: ");
@@ -62,7 +62,7 @@ void ManHinhDangNhap()
 void ManHinhTrangChu()
 {
     system("cls");
-    printf("Chào %s\n", nhanVien.HoVaTen);
+    printf("Chào %s\n\n", nhanVien.HoVaTen);
 
     printf("1. Nạp tiền vào tài khoản\n");
     printf("2. Rút tiền tại ngân hàng\n");
@@ -257,7 +257,6 @@ void TaoTaiKhoan()
         random[i] = ALLOWED[c];
     }
     random[3] = '\0';
-    strcpy(user.SoTaiKhoan, random);
     if (getUserByID(user.SoTaiKhoan).TonTai == 1)
     {
         system("cls"); //Xoá màn hình
