@@ -238,6 +238,7 @@ void InDanhSachLichSu(char SoTaiKhoan[])
     fseek(fp, 0, SEEK_END);
     int size = ftell(fp);
     
+    fclose(fp);
     fp = fopen("LichSu.txt", "r");
 
     int count = 0;
@@ -333,7 +334,6 @@ void replaceLineInFile(char *filename, int lineIndex, char *newString) {
 
     fclose(temp);
     fclose(file);
-    fclose(file);
 
     if(remove(filename) != 0)
         perror("Error deleting file");
@@ -353,6 +353,7 @@ User getUserByID(char SoTaiKhoan[])
     fseek(fp, 0, SEEK_END);
     int size = ftell(fp);
     
+    fclose(fp);
     fp = fopen("Users.txt", "r");
     int row_index = 0;
     if (size > 0) 
@@ -413,6 +414,7 @@ NhanVien getNhanVienByID(char TaiKhoan[])
     fseek(fp, 0, SEEK_END);
     int size = ftell(fp);
     
+    fclose(fp);
     fp = fopen("AdminAccount.txt", "r");
     int row_index = 0;
     if (size > 0) 
